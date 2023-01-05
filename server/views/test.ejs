@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Quiz App</title>
+  <style>
+    *, *::before, *::after {
+  box-sizing: border-box;
+  font-family: Gotham Rounded;
+}
+ 
+:root {
+  --hue-neutral: 200;
+  --hue-wrong: 0;
+  --hue-correct: 145;
+}
+ 
+body {
+  --hue: var(--hue-neutral);
+  padding: 0;
+  margin: 0;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: hsl(var(--hue), 100%, 20%);
+}
+ 
+ 
+.container {
+  width: 800px;
+  max-width: 80%;
+  background-color: white;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 0 10px 2px;
+}
+ 
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 10px;
+  margin: 20px 0;
+}
+ 
+.btn {
+  --hue: var(--hue-neutral);
+  border: 1px solid hsl(var(--hue), 100%, 30%);
+  background-color: hsl(var(--hue), 100%, 50%);
+  border-radius: 5px;
+  padding: 5px 10px;
+  color: white;
+  outline: none;
+}
+ 
+.btn:hover {
+  border-color: black;
+}
+ 
+.btn.correct {
+  --hue: var(--hue-correct);
+  color: black;
+}
+ 
+.btn.wrong {
+  --hue: var(--hue-wrong);
+}
+ 
+.start-btn, .next-btn {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 10px 20px;
+}
+ 
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+ 
+.hide {
+  display: none;
+}
+.slider {
+  display: flex;
+  align-items: center;
+  width: 300px;
+  height: 30px;
+  margin: 10px 0;
+  background: rgb(148, 174, 71);
+  border-radius: 15px;
+  overflow: hidden;
+}
+ 
+.slider input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+ 
+.slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgb(10, 17, 145);
+  cursor: pointer;
+}
+ 
+.slider span {
+  font-size: 14px;
+  color: rgb(168, 26, 26);
+}
+ 
+.slider #temperature-min {
+  position: flex;
+  left: 0;
+}
+ 
+.slider #temperature-max {
+  position: flex;
+  right: 0;
+}
+ 
+.slider #temperature-value {
+  position: relative;
+  /* top: 20px;
+  left: 50%;
+  transform: translateX(-50%); */
+}
+ 
+.selected {
+  border: 2px solid green;
+}
+  </style>
+</head>
+<body>
+  <form method="post" action="/submit-form">
+    <div class="container">
+      <div id="question-container1" class="hide">
+        <div id="question1">Question</div>
+        <div id="answer-buttons1" class="btn-grid">
+          <label><input type="radio" name="kod" value="ODP1">odp1</label>
+          <label><input type="radio" name="kod" value="ODP2">odp2</label>
+          <label><input type="radio" name="kod" value="ODP3">odp3</label>
+          <label><input type="radio" name="kod" value="ODP4">odp4</label>
+        </div>
+      </div>
+      <div id="question-container2" class="hide">
+          <div id="question2">Question</div>
+          <div id="answer-buttons2" class="btn-grid">
+            <label><input type="radio" name="kod" value="ODP1">odp1</label>
+            <label><input type="radio" name="kod" value="ODP2">odp2</label>
+            <label><input type="radio" name="kod" value="ODP3">odp3</label>
+            <label><input type="radio" name="kod" value="ODP4">odp4</label>
+          </div>
+        </div>
+        <div id="question-container3" class="hide">
+          <div id="question3">Question</div>
+          <div id="answer-buttons3" class="btn-grid">
+            <label><input type="radio" name="kod" value="ODP1">odp1</label>
+            <label><input type="radio" name="kod" value="ODP2">odp2</label>
+            <label><input type="radio" name="kod" value="ODP3">odp3</label>
+            <label><input type="radio" name="kod" value="ODP4">odp4</label>
+          </div>
+        </div>
+        <div id="question-container4" class="hide">
+          <div id="question4">Question</div>
+          <div id="answer-buttons4" class="btn-grid">
+            <label><input type="radio" name="kod" value="ODP1">odp1</label>
+            <label><input type="radio" name="kod" value="ODP2">odp2</label>
+            <label><input type="radio" name="kod" value="ODP3">odp3</label>
+            <label><input type="radio" name="kod" value="ODP4">odp4</label>
+          </div>
+        </div>
+        <div class="controls">
+          <input type="button" id="start-btn" class="start-btn btn" value="Start"></input>
+          <input type="submit" id="next-btn" class="next-btn btn hide" value="Next"></input>
+        </form>
+      </div>
+    </div>
+  
+</body>
+</html>
+
+
+
+<script>
+const startButton = document.getElementById('start-btn')
+const nextButton = document.getElementById('next-btn')
+const questionContainerElement1 = document.getElementById('question-container1')
+const questionContainerElement2 = document.getElementById('question-container2')
+const questionContainerElement3 = document.getElementById('question-container3')
+const questionContainerElement4 = document.getElementById('question-container4')
+const questionElement1 = document.getElementById('question1')
+const questionElement2 = document.getElementById('question2')
+const questionElement3 = document.getElementById('question3')
+const questionElement4 = document.getElementById('question4')
+const answerButtonsElement1 = document.getElementById('answer-buttons1')
+const answerButtonsElement2 = document.getElementById('answer-buttons2')
+const answerButtonsElement3 = document.getElementById('answer-buttons3')
+const answerButtonsElement4 = document.getElementById('answer-buttons4')
+const form = document.querySelector('form');
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const url = form.getAttribute('action');
+    const method = form.getAttribute('method');
+  
+    fetch(url, {
+      method,
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        // tutaj możesz obsłużyć odpowiedź z serwera i wykonać określone akcje, np. wyświetlenie alertu lub przejście do innej strony
+      });
+  });
+startButton.addEventListener('click', startGame)
+nextButton.addEventListener('click', () => {
+    currentQuestionIndex= currentQuestionIndex+4
+  setNextQuestions()
+  })
+  function startGame() {
+    startButton.classList.add('hide')
+    shuffledQuestions = questions.sort(() => Math.random() - .5)
+    currentQuestionIndex = 0
+    nextButton.classList.remove('hide')
+    questionContainerElement1.classList.remove('hide')
+    questionContainerElement2.classList.remove('hide')
+    questionContainerElement3.classList.remove('hide')
+    questionContainerElement4.classList.remove('hide')
+    setNextQuestions()
+  }
+  function setNextQuestions() {
+    showQuestion1(shuffledQuestions[currentQuestionIndex])
+    showQuestion2(shuffledQuestions[currentQuestionIndex+1])
+    showQuestion3(shuffledQuestions[currentQuestionIndex+2])
+    showQuestion4(shuffledQuestions[currentQuestionIndex+3])
+  }
+  
+  function showQuestion1(question) {
+    questionElement1.innerText = question.question;
+    while (answerButtonsElement1.firstChild) {
+      answerButtonsElement1.removeChild(answerButtonsElement1.firstChild);
+    }
+    question.answers.forEach(answer => {
+      if( answer.type === 'radio'){
+        label = radio(answer); 
+      }else if( answer.type==='range'){
+        label = suwak(answer);
+      }else if(answer.type ==='img'){
+        label = img(answer);
+      }else if(answer.type === 'textarea'){
+        label = textarea(answer);
+      }
+      answerButtonsElement1.appendChild(label);
+    });
+  }
+  function showQuestion2(question) {
+    questionElement2.innerText = question.question;
+    while (answerButtonsElement2.firstChild) {
+      answerButtonsElement2.removeChild(answerButtonsElement2.firstChild);
+    }
+    question.answers.forEach(answer => {
+      if( answer.type === 'radio'){
+        label = radio(answer); 
+      }else if( answer.type==='range'){
+        label = suwak(answer);
+      }else if(answer.type==='img'){
+        label = img(answer);
+      }else if(answer.type === 'textarea'){
+        label = textarea(answer);
+      }
+      answerButtonsElement2.appendChild(label);
+    });
+  }
+  function showQuestion3(question) {
+    questionElement3.innerText = question.question;
+    while (answerButtonsElement3.firstChild) {
+      answerButtonsElement3.removeChild(answerButtonsElement3.firstChild);
+    }
+    question.answers.forEach(answer => {
+      if( answer.type === 'radio'){
+        label = radio(answer); 
+      }else if( answer.type==='range'){
+        label = suwak(answer);
+      }else if(answer.type==='img'){
+        label = img(answer);
+      }else if(answer.type === 'textarea'){
+        label = textarea(answer);
+      }
+      answerButtonsElement3.appendChild(label);
+    });
+  }
+  function showQuestion4(question) {
+    questionElement4.innerText = question.question;
+    while (answerButtonsElement4.firstChild) {
+      answerButtonsElement4.removeChild(answerButtonsElement4.firstChild);
+    }
+    question.answers.forEach(answer => {
+      if( answer.type === 'radio'){
+        label = radio(answer); 
+      }else if( answer.type==='range'){
+        label = suwak(answer);
+      }else if(answer.type==='img'){
+        label = img(answer);
+      }else if(answer.type === 'textarea'){
+        label = textarea(answer);
+      }
+      answerButtonsElement4.appendChild(label);
+    });
+  }
+function suwak(answer){ 
+const label = document.createElement('label');
+const input = document.createElement('input');
+label.classList.add('slider');
+input.type = answer.type;
+input.min = answer.min;
+input.max = answer.max;
+input.value = answer.value;
+const temperatureMin = document.createElement('span');
+temperatureMin.textContent = input.min;
+temperatureMin.id = 'temperature-min';
+const temperatureMax = document.createElement('span');
+temperatureMax.textContent = input.max;
+temperatureMax.id = 'temperature-max';
+const temperatureValue = document.createElement('span');
+temperatureValue.textContent = input.value;
+temperatureValue.id = 'temperature-value';
+temperatureValue.style.display = 'block';
+label.appendChild(temperatureMin);
+label.appendChild(input);
+label.appendChild(temperatureMax);
+label.appendChild(temperatureValue);
+input.addEventListener('input', event => {
+  temperatureValue.textContent = event.target.value;
+});
+      return label;
+  }
+  function img(answer){
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+      input.type = 'radio';
+      input.style.display = 'none';
+      input.name = answer.kod_pytania;
+      input.value = answer.text;
+      input.id= answer.id
+      const img = document.createElement('img');
+      img.src = answer.src;
+      img.alt = answer.id;
+      img.width = 100;
+      label.appendChild(img);
+      label.appendChild(input);
+      const text = document.createTextNode(answer.text);
+      // label.appendChild(text);
+      input.addEventListener('change', function() {
+        if (this.checked) {
+          label.style.border = '5px solid green';
+        } else {
+          label.style.border = '';
+        }
+        var labels = document.querySelectorAll('label:has(input[name="' + answer.kod_pytania + '"]:not(:checked))');
+        for (var i = 0; i < labels.length; i++) {
+          labels[i].style.border = '';
+        }
+      });
+    
+      
+      
+      return label;
+  }
+  function radio(answer){
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = answer.kod_pytania;
+    input.value = answer.text;
+    label.appendChild(input);
+    const text = document.createTextNode(answer.text);
+    label.appendChild(text);
+    return label;
+  }
+  function textarea(answer){
+    const label = document.createElement('label');
+    const textarea = document.createElement('textarea');
+    textarea.name = answer.kod_pytania;
+    textarea.placeholder = answer.text;
+    label.appendChild(textarea);
+    return label;
+  }
+  const questions = [
+    {
+      question: 'What is 2 + 2?',
+      answers: [
+        { type:'radio',text: '4', kod_pytania: 1},
+        { type:'radio',text: '22', kod_pytania: 1}
+      ]
+    },
+    {
+      question: 'Who is the best YouTuber?',
+      answers: [
+        { type:'radio',text: 'Web Dev Simplified', kod_pytania: 2 },
+        { type:'radio',text: 'Traversy Media', kod_pytania: 2},
+        { type:'radio',text: 'Dev Ed', kod_pytania: 2},
+        { type:'radio',text: 'Fun Fun Function', kod_pytania: 2}
+      ]
+    },
+    {
+      question: 'Is web development fun?',
+      answers: [
+        { type:'radio',text: 'Kinda', kod_pytania: 3},
+        { type:'radio',text: 'YES!!!', kod_pytania: 3},
+        { type:'radio',text: 'Um no', kod_pytania: 3},
+        { type:'radio',text: 'IDK', kod_pytania: 3}
+      ]
+    },
+    {
+      // --------------------- pytanie otwarte -------------------------------
+      question: 'Napisz pare zdan o sobie',
+      answers: [
+        { type:'textarea',text: 'Miejsce na twoja odpowiedz', kod_pytania: 4} 
+      ]
+    },
+    {
+      // ------------------- pytanie z sywakiem ----------------------------
+        question: 'Jaka jest dzis temperatura?',
+        answers: [
+          { type: 'range', kod_pytania: 5, min: '-25' ,max: '25' , value: '0'}
+        ]
+      },
+      {
+        question: 'Who is the best YouTuber?',
+        answers: [
+          { type:'radio',text: 'Web Dev Simplified2', kod_pytania: 6},
+          { type:'radio',text: 'Traversy Media2', kod_pytania: 6},
+          { type:'radio',text: 'Dev Ed2', kod_pytania: 6},
+          { type:'radio',text: 'Fun Fun Function2', kod_pytania: 6}
+        ]
+      },
+      {
+        question: 'Is web development fun?',
+        answers: [
+          {type:'radio', text: 'Kinda2', kod_pytania: 7, img: false, type:'radio'  },
+          {type:'radio', text: 'YES!!!2', kod_pytania: 7, img: false, type:'radio'  },
+          {type:'radio', text: 'Um no2', kod_pytania: 7, img: false, type:'radio'  },
+          {type:'radio', text: 'IDK2', kod_pytania: 7, img: false, type:'radio'  }
+        ]
+      },
+      {
+        // ------------------- pytanie z obrazkami ------------------
+        question: 'Jaki jest symbol Polski?',
+        answers: [
+          {type:'img', text: 'Orzel bialy', kod_pytania: 8, src: 'https://upload.wikimedia.org/wikipedia/commons/9/9f/Orze%C5%82_Bia%C5%82y_1927.jpg', id:'symbol-1'},
+          {type:'img', text: 'Sowa', kod_pytania: 8, src: 'https://upload.wikimedia.org/wikipedia/commons/9/97/Waldohreule_in_freier_Wildbahn.jpg', id:'symbol-2'},
+          {type:'img', text: 'Plonacy stos', kod_pytania: 8, src: 'https://upload.wikimedia.org/wikipedia/commons/7/78/Jan_Matejko%2C_Sta%C5%84czyk.jpg', id:'symbol-3'},
+          {type:'img', text: 'Kupa', kod_pytania: 8, src: 'https://hpba.pl/wp-content/uploads/2016/12/hqdefault.jpg', id:'symbol-4'}
+        ]
+      }
+  ]
+</script>

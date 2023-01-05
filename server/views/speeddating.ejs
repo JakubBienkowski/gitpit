@@ -1,0 +1,30 @@
+<%- include('partials/header'); -%>
+
+<form action="/speed-dating">
+    <h2>cos tam</h2>
+    <input type="text" name="numTables"  />
+    <input type="text" name="roomCode"  />
+    <button>submit</button>
+</form>
+  
+<script>
+    const form = document.querySelector('form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // get values
+      const numTables = form.numTables.value;
+      const roomCode = form.roomCode.value;
+      try {
+        const res = await fetch('/speed-dating', { 
+          method: 'POST', 
+          body: JSON.stringify({ numTables, roomCode }),
+          headers: {'Content-Type': 'application/json'}
+        });
+        const data = await res.json();
+        console.log(data);
+      }
+      catch (err) {
+        console.log(err);
+      }
+    });
+</script>
